@@ -204,3 +204,12 @@ modelo de amenazas, no omitida por descuido.
 - **Benchmark ampliado:** las métricas actuales son sobre 10 casos propios,
   no sobre código de producción real de terceros (ver limitación explícita
   en `docs/modelo_de_amenazas.md`).
+
+
+## Security Standards 🔐
+
+Este repositorio sigue normas rigurosas de seguridad para garantizar la integridad de la cadena de suministro de software (*Software Supply Chain Integrity*):
+
+* **GPG Signing:** Todos los *commits* están firmados digitalmente mediante una clave GPG para garantizar la autenticidad de la autoría.
+* **Automated Security Headers:** Los archivos de código fuente incluyen encabezados de autoría inyectados automáticamente mediante *Git hooks* (`pre-commit`), asegurando la estandarización y trazabilidad.
+* **Git Integrity:** Se emplea un archivo `.gitignore` restrictivo para prevenir la exposición accidental de secretos, registros (*logs*) o datos sensibles.
