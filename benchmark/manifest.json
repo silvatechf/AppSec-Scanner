@@ -1,0 +1,12 @@
+{
+  "sql_vuln_fstring.py": { "expected_rule": "sql_injection", "vulnerable": true },
+  "sql_vuln_percent.py": { "expected_rule": "sql_injection", "vulnerable": true },
+  "sql_vuln_concat.py": { "expected_rule": "sql_injection", "vulnerable": true },
+  "sql_safe_paramquery.py": { "expected_rule": "sql_injection", "vulnerable": false },
+  "sql_safe_static.py": { "expected_rule": "sql_injection", "vulnerable": false },
+  "path_vuln_open.py": { "expected_rule": "path_traversal", "vulnerable": true },
+  "path_vuln_remove.py": { "expected_rule": "path_traversal", "vulnerable": true },
+  "path_safe_static.py": { "expected_rule": "path_traversal", "vulnerable": false },
+  "path_safe_joined_and_checked.py": { "expected_rule": "path_traversal", "vulnerable": false },
+  "mixed_no_findings.py": { "expected_rule": null, "vulnerable": false }
+}

@@ -1,0 +1,32 @@
+name: AppSec Gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Ejecutar escaneo AST (sin remediar, solo detectar)
+        run: |
+          python appsec_scanner/scanner.py . \
+            --audit-log tests/security_audit.jsonl \
+            --fail-on-critical
+
+      - name: Ejecutar benchmark de precisión/recall
+        run: python benchmark/run_benchmark.py
+
+      - name: Publicar log de auditoría como artefacto
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-audit-log
+          path: tests/security_audit.jsonl

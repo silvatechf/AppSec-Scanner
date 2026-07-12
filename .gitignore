@@ -1,0 +1,22 @@
+﻿# Ambiente Python
+__pycache__/
+*.py[cod]
+*.class
+venv/
+.env
+
+# Logs e Dados sensíveis (Nunca commit logs de auditoria locais!)
+*.log
+*.jsonl
+.DS_Store
+
+# Docker e Infra (Mantenha o docker-compose, ignore dados)
+infra/data/
+infra/db_data/
+
+# IDEs
+.vscode/
+.idea/
+
+# Sistema
+.git/
