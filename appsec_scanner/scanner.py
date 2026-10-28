@@ -83,7 +83,6 @@ class Rule(ABC):
 # --------------------------------------------------------------------------- #
 
 SQL_KEYWORDS = re.compile(r"\b(SELECT|INSERT|UPDATE|DELETE)\b", re.IGNORECASE)
-PERCENT_PATTERN = re.compile(r'("(?:[^"\\]|\\.)*")\s*%\s*\(?([\w.\[\]\'", ]+)\)?')
 
 
 class SQLInjectionRule(Rule):
@@ -109,7 +108,7 @@ class SQLInjectionRule(Rule):
                     kind = "percent-format" if is_percent else "concatenation"
                     sev = "HIGH" if is_percent else "CRITICAL"
                     self.findings.append(Finding("sql_injection", self.filename, node.lineno,
-                                                  kind, text.strip(), sev, is_percent))
+                                                  kind, text.strip(), sev, False))
             self.generic_visit(node)
 
         @staticmethod
@@ -124,15 +123,6 @@ class SQLInjectionRule(Rule):
         v.visit(tree)
         return v.findings
 
-    def remediate(self, line: str, finding: Finding) -> Optional[str]:
-        if finding.kind != "percent-format":
-            return None
-        match = PERCENT_PATTERN.search(line)
-        if not match:
-            return None
-        template, params = match.groups()
-        safe_template = re.sub(r"%s", "?", template)
-        return line.replace(match.group(0), f"{safe_template}, ({params},)")
 
 
 # --------------------------------------------------------------------------- #
