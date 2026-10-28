@@ -1,30 +1,25 @@
 # AppSec Scanner — detección, remediación y auditoría de vulnerabilidades en Python
 
-Motor de análisis estático (AST) que detecta clases de vulnerabilidad en código Python,
-decide **con criterio explícito** qué se puede remediar automáticamente sin riesgo,
-y deja un rastro de auditoría estructurado listo para observabilidad (Loki/Grafana)
-y para actuar como gate de seguridad en CI/CD.
+AppSec Scanner es un proyecto de portfolio en Python que utiliza el AST para detectar
+patrones seleccionados de **SQL injection** y **path traversal**. Registra hallazgos
+y decisiones de remediación en un log JSONL, puede funcionar como gate en CI y ofrece
+una integración local de observabilidad con Loki, Promtail y Grafana.
 
-No es un linter más. Es la pieza que le falta a la mayoría de escáneres personales:
-**evidencia auditable de que la detección y la remediación realmente ocurrieron**,
-que es justo lo que pide un equipo de compliance (SOC 2, ISO 27001) o un revisor
-técnico senior.
+El objetivo es demostrar un flujo verificable de análisis estático: detectar,
+explicar qué se puede remediar de forma limitada, conservar evidencia y automatizar
+la ejecución. El proyecto no sustituye un SAST maduro ni una revisión de seguridad.
 
-<img src="assets/img1.png" alt="screeshot grafana" width="1200">
+<img src="assets/img1.png" alt="Dashboard de Grafana para eventos del scanner" width="1200">
 
 ---
 
 ## Por qué existe
 
-La mayoría de proyectos de seguridad en portfolios se quedan en "detecté la
-vulnerabilidad". Eso es el 20% del problema. El 80% restante — y el que de verdad
-importa en un equipo real — es:
+El proyecto explora tres cuestiones prácticas:
 
-1. ¿Qué se puede arreglar automáticamente **sin romper nada**, y qué no?
-2. ¿Cómo queda evidencia de esa decisión, verificable por un tercero?
-3. ¿Cómo se integra esto en el pipeline para que nadie tenga que acordarse de correrlo?
-
-Este lab responde a las tres preguntas con código que corre, no con diapositivas.
+1. ¿Qué hallazgos pueden remediarse de forma acotada y qué debe revisar una persona?
+2. ¿Cómo se conserva un registro estructurado de los hallazgos y de las decisiones?
+3. ¿Cómo se ejecuta el análisis automáticamente dentro de CI?
 
 ---
 
@@ -37,6 +32,25 @@ Este lab responde a las tres preguntas con código que corre, no con diapositiva
 
 La arquitectura está pensada para crecer: cada regla implementa una interfaz `Rule`
 común, así que añadir una tercera clase de vulnerabilidad no toca el resto del motor.
+
+---
+
+## Inicio rápido
+
+Requisitos: Python instalado y una terminal abierta en la raíz del repositorio. El análisis
+estático y el benchmark usan la biblioteca estándar de Python; el stack de observabilidad
+con Docker Compose es opcional.
+
+```bash
+# Escanear los casos de ejemplo sin modificarlos
+python appsec_scanner/scanner.py benchmark/cases --audit-log tests/security_audit.jsonl
+
+# Ejecutar el benchmark local del proyecto
+python benchmark/run_benchmark.py
+```
+
+El benchmark usa un corpus pequeño creado para este proyecto. Consulta la sección de
+resultados y el [modelo de amenazas](docs/modelo_de_amenazas.md) para entender su alcance.
 
 ---
 
@@ -101,7 +115,7 @@ python appsec_scanner/scanner.py <directorio> --fail-on-critical
 python benchmark/run_benchmark.py
 ```
 
-Integración lista para GitHub Actions en [`ci/appsec-gate.yml`](ci/appsec-gate.yml):
+El workflow de GitHub Actions está registrado en [`.github/workflows/appsec-gate.yml`](.github/workflows/appsec-gate.yml):
 corre el escaneo, bloquea el PR si hay críticos sin resolver, corre el benchmark
 y publica el log de auditoría como artefacto descargable.
 
@@ -206,10 +220,9 @@ modelo de amenazas, no omitida por descuido.
   en `docs/modelo_de_amenazas.md`).
 
 
-## Security Standards 🔐
+## Controles de seguridad documentados
 
-Este repositorio sigue normas rigurosas de seguridad para garantizar la integridad de la cadena de suministro de software (*Software Supply Chain Integrity*):
-
-* **GPG Signing:** Todos los *commits* están firmados digitalmente mediante una clave GPG para garantizar la autenticidad de la autoría.
-* **Automated Security Headers:** Los archivos de código fuente incluyen encabezados de autoría inyectados automáticamente mediante *Git hooks* (`pre-commit`), asegurando la estandarización y trazabilidad.
-* **Git Integrity:** Se emplea un archivo `.gitignore` restrictivo para prevenir la exposición accidental de secretos, registros (*logs*) o datos sensibles.
+- El workflow de CI ejecuta el escáner sobre el corpus y puede bloquear la ejecución cuando quedan hallazgos críticos sin remediar.
+- Los hallazgos y las decisiones de remediación se registran en formato JSONL para facilitar su revisión.
+- El modelo de amenazas documenta las reglas implementadas, las exclusiones y las limitaciones del benchmark.
+- Estas medidas no implican que todos los commits estén firmados ni sustituyen una revisión independiente de la cadena de suministro.
