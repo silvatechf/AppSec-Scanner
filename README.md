@@ -220,10 +220,9 @@ modelo de amenazas, no omitida por descuido.
   en `docs/modelo_de_amenazas.md`).
 
 
-## Security Standards 🔐
+## Controles de seguridad documentados
 
-Este repositorio sigue normas rigurosas de seguridad para garantizar la integridad de la cadena de suministro de software (*Software Supply Chain Integrity*):
-
-* **GPG Signing:** Todos los *commits* están firmados digitalmente mediante una clave GPG para garantizar la autenticidad de la autoría.
-* **Automated Security Headers:** Los archivos de código fuente incluyen encabezados de autoría inyectados automáticamente mediante *Git hooks* (`pre-commit`), asegurando la estandarización y trazabilidad.
-* **Git Integrity:** Se emplea un archivo `.gitignore` restrictivo para prevenir la exposición accidental de secretos, registros (*logs*) o datos sensibles.
+- El workflow de CI ejecuta el escáner sobre el corpus y puede bloquear la ejecución cuando quedan hallazgos críticos sin remediar.
+- Los hallazgos y las decisiones de remediación se registran en formato JSONL para facilitar su revisión.
+- El modelo de amenazas documenta las reglas implementadas, las exclusiones y las limitaciones del benchmark.
+- Estas medidas no implican que todos los commits estén firmados ni sustituyen una revisión independiente de la cadena de suministro.
