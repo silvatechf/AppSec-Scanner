@@ -82,11 +82,14 @@ $ echo $?
 Benchmark contra el corpus etiquetado:
 
 ```
+=== Resultado global (cualquier hallazgo) ===
 TP=5 FP=0 FN=0 TN=5
 Precisión: 1.00  Recall: 1.00  F1: 1.00
 
-sql_injection:   {'tp': 3, 'fp': 0, 'fn': 0, 'tn': 2}
-path_traversal:  {'tp': 2, 'fp': 0, 'fn': 0, 'tn': 2}
+=== Detalle por regla esperada ===
+sql_injection: TP=3 FP=0 FN=0 TN=2 | Precision=1.00 Recall=1.00 F1=1.00
+path_traversal: TP=2 FP=0 FN=0 TN=2 | Precision=1.00 Recall=1.00 F1=1.00
+no_expected_rule: TP=0 FP=0 FN=0 TN=1 | Precision=0.00 Recall=0.00 F1=0.00
 ```
 
 **Nota de honestidad, a propósito, en negrita:** este benchmark es un corpus propio
