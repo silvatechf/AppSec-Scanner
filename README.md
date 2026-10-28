@@ -27,7 +27,7 @@ El proyecto explora tres cuestiones prácticas:
 
 | Regla | Qué busca | ¿Se remedia solo? |
 |---|---|---|
-| `sql_injection` | SQL construido con f-string, concatenación o `%`-format | Solo el caso `%`-format — es el único demostrablemente seguro sin ejecutar el código |
+| `sql_injection` | SQL construido con f-string, concatenación o `%`-format | No — las reescrituras SQL automáticas están desactivadas hasta poder transformar de forma segura la llamada completa a la base de datos |
 | `path_traversal` | Rutas dinámicas en `open()`, `os.remove()`, `os.unlink()`, `os.rmdir()`, `shutil.rmtree()` | No — no existe una reescritura genérica segura sin conocer el directorio base permitido de cada contexto |
 
 La arquitectura está pensada para crecer: cada regla implementa una interfaz `Rule`
@@ -63,11 +63,12 @@ $ python appsec_scanner/scanner.py benchmark/cases --audit-log tests/demo_audit.
 AppSec scan: 5 hallazgo(s) totales
 ```
 
-Remediación automática del único caso seguro (`%`-format → consulta parametrizada):
+Remediación automática SQL:
 
-```diff
-- query = "SELECT * FROM orders WHERE id = %s" % order_id
-+ query = "SELECT * FROM orders WHERE id = ?", (order_id,)
+```text
+Las construcciones SQL dinámicas se registran para revisión manual.
+El scanner no reescribe automáticamente la consulta: transformar solo
+la expresión puede producir una tupla donde el programa espera una cadena.
 ```
 
 Gate de CI bloqueando correctamente cuando quedan hallazgos `CRITICAL` sin remediar:
@@ -108,7 +109,7 @@ de esta limitación, y de qué queda deliberadamente fuera de alcance, está en
 # Detectar sin modificar nada
 python appsec_scanner/scanner.py <directorio> --audit-log tests/security_audit.jsonl
 
-# Detectar y remediar automáticamente lo que es seguro remediar
+# Detectar hallazgos y aplicar solo remediaciones implementadas explícitamente
 python appsec_scanner/scanner.py <directorio> --fix
 
 # Usarlo como gate de CI (sale con código 1 si hay CRITICAL sin remediar)
