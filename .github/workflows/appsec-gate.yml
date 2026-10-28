@@ -1,0 +1,39 @@
+name: AppSec Gate
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    name: Scan scanner source and run benchmark
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Scan the scanner source
+        run: |
+          python appsec_scanner/scanner.py appsec_scanner \
+            --audit-log tests/security_audit.jsonl \
+            --fail-on-critical
+
+      - name: Run the labelled benchmark
+        run: python benchmark/run_benchmark.py
+
+      - name: Upload audit log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-audit-log
+          path: tests/security_audit.jsonl
+          if-no-files-found: ignore
