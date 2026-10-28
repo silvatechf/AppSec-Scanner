@@ -115,7 +115,7 @@ python appsec_scanner/scanner.py <directorio> --fail-on-critical
 python benchmark/run_benchmark.py
 ```
 
-Integración lista para GitHub Actions en [`ci/appsec-gate.yml`](ci/appsec-gate.yml):
+El workflow de GitHub Actions está registrado en [`.github/workflows/appsec-gate.yml`](.github/workflows/appsec-gate.yml):
 corre el escaneo, bloquea el PR si hay críticos sin resolver, corre el benchmark
 y publica el log de auditoría como artefacto descargable.
 
